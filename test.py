@@ -15,23 +15,17 @@ if "messages" not in st.session_state:
 # --- CUSTOM CSS ---
 st.markdown("""
 <style>
-/* Center the main content and limit width */
 .block-container {
-    max-width: 800px;  /* adjust width as needed */
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 800px;
+    margin: auto;
+    height: 90vh; /* full app height */
     display: flex;
     flex-direction: column;
-    height: 90vh; /* take most of screen height */
 }
 
-/* Chat wrapper fills available space */
-.chat-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+/* Scrollable chat area */
+.chat-container {
+    flex: 1;  /* take remaining space */
     overflow-y: auto;
     padding: 1rem;
     border: 1px solid #ddd;
@@ -49,14 +43,12 @@ st.markdown("""
     max-width: 80%;
     word-wrap: break-word;
 }
-
 .user-msg {
     background-color: #E6F0FF;
     color: #001965;
     float: right;
     clear: both;
 }
-
 .ai-msg {
     background-color: #f0f4ff;
     color: #001965;
@@ -64,47 +56,36 @@ st.markdown("""
     clear: both;
 }
 
-/* Input bar pinned at bottom */
+/* Fixed input row */
 .input-row {
-    position: sticky;
-    bottom: 0;
     background: white;
     padding: 10px;
     border-top: 1px solid #ddd;
-    z-index: 10;
 }
-
-/* Header styling */
-.header {
-    background-color:#001965;
-    color:white;
-    padding:15px;
-    border-radius:8px;
-    margin-bottom:10px;
-}
-.header h2 { margin:0; }
-.header p { margin:0; font-size:16px; }
 </style>
 """, unsafe_allow_html=True)
 
 # --- HEADER ---
 st.markdown("""
-<div class="header">
+<div class="header" style="background:#001965;color:white;padding:15px;border-radius:8px;margin-bottom:10px;">
   <h2>📑 Audit Buddy</h2>
   <p>Ask questions and get AI-powered answers from your audit knowledge base.</p>
 </div>
 """, unsafe_allow_html=True)
 
-# --- CHAT + INPUT ---
-st.markdown('<div class="chat-wrapper">', unsafe_allow_html=True)
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+# --- CHAT HISTORY (scrollable) ---
+chat_placeholder = st.container()
+with chat_placeholder:
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    for msg in st.session_state.messages:
+        if msg["role"] == "user":
+            st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# --- INPUT BAR ---
+# --- FIXED INPUT BAR ---
+st.markdown('<div class="input-row">', unsafe_allow_html=True)
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([9, 1])
     with col1:
@@ -118,10 +99,8 @@ with st.form(key="chat_form", clear_on_submit=True):
         submitted = st.form_submit_button("🔍")
 
     if submitted and query.strip():
-        # Save user message
         st.session_state.messages.append({"role": "user", "text": query})
 
-        # Get AI response
         with st.spinner("🤖 Thinking..."):
             try:
                 response = requests.post(
@@ -138,3 +117,4 @@ with st.form(key="chat_form", clear_on_submit=True):
                     st.error(f"❌ Error: {response.status_code} - {response.text}")
             except requests.exceptions.RequestException as e:
                 st.error(f"⚠️ Connection error: {e}")
+st.markdown('</div>', unsafe_allow_html=True)
