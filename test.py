@@ -18,14 +18,14 @@ st.markdown("""
 .block-container {
     max-width: 800px;
     margin: auto;
-    height: 90vh; /* full app height */
+    height: 90vh;
     display: flex;
     flex-direction: column;
 }
 
 /* Scrollable chat area */
 .chat-container {
-    flex: 1;  /* take remaining space */
+    flex: 1;
     overflow-y: auto;
     padding: 1rem;
     border: 1px solid #ddd;
@@ -74,15 +74,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- CHAT HISTORY (scrollable) ---
-chat_placeholder = st.container()
-with chat_placeholder:
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('<div class="chat-container" id="chat-box">', unsafe_allow_html=True)
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# --- AUTO-SCROLL SCRIPT ---
+st.markdown("""
+<script>
+var chatBox = document.getElementById('chat-box');
+if (chatBox) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
+""", unsafe_allow_html=True)
 
 # --- FIXED INPUT BAR ---
 st.markdown('<div class="input-row">', unsafe_allow_html=True)
