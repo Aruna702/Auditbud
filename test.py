@@ -99,6 +99,10 @@ if st.button("🔍 Send"):
                     data = response.json()
                     answer = data.get("answer", "No answer received.")
                     st.session_state.messages.append({"role": "AI", "text": answer})
+
+                    # ✅ force rerun so the answer displays immediately
+                    st.rerun()
+
                 else:
                     st.error(f"❌ Error: {response.status_code} - {response.text}")
             except requests.exceptions.RequestException as e:
