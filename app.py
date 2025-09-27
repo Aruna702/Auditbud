@@ -20,7 +20,7 @@ if st.button("🔍 Get Answer"):
             try:
                 # Send query to n8n webhook
                 response = requests.post(
-                    "https://<your-n8n-domain>/webhook/audit-buddy",
+                    "https://aruna78.app.n8n.cloud/webhook-test/audit-buddy",
                     json={"query": query},
                     timeout=30
                 )
