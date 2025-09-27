@@ -15,21 +15,16 @@ if "messages" not in st.session_state:
 # --- CUSTOM CSS ---
 st.markdown("""
 <style>
-/* Make the whole app a flexbox */
 .stApp {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
-
-/* Chat container scrolls */
 .chat-container {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
 }
-
-/* Input container sticks at bottom */
 .input-container {
     position: sticky;
     bottom: 0;
@@ -37,8 +32,6 @@ st.markdown("""
     padding: 1rem;
     border-top: 1px solid #ddd;
 }
-
-/* Chat bubbles */
 .user-msg {
     background-color: #E6F0FF;
     color: #001965;
@@ -49,7 +42,6 @@ st.markdown("""
     width: fit-content;
     max-width: 80%;
 }
-
 .ai-msg {
     background-color: #001965;
     color: #FFFFFF;
@@ -71,30 +63,19 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- CHAT AREA ---
-chat_container = st.container()
-with chat_container:
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    for msg in reversed(st.session_state.messages):  # show newest at bottom
-        if msg["role"] == "user":
-            st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
 # --- INPUT AREA ---
 st.markdown('<div class="input-container">', unsafe_allow_html=True)
 query = st.text_area("💬 Type your message...", height=80, label_visibility="collapsed")
 
 if st.button("🔍 Send"):
     if query.strip():
-        # Append user message
+        # Append user message immediately
         st.session_state.messages.append({"role": "user", "text": query})
 
         with st.spinner("🤖 Thinking..."):
             try:
                 response = requests.post(
-                    "https://aruna78.app.n8n.cloud/webhook/audit-buddy",
+                    "https://aruna78.app.n8n.cloud/webhook/audit-buddy",  # ✅ use production webhook
                     json={"query": query},
                     timeout=30
                 )
@@ -110,3 +91,14 @@ if st.button("🔍 Send"):
     else:
         st.warning("⚠️ Please enter a question.")
 st.markdown('</div>', unsafe_allow_html=True)
+
+# --- CHAT AREA (moved here so it updates after new messages) ---
+chat_container = st.container()
+with chat_container:
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    for msg in st.session_state.messages:  # ✅ keep natural order (top to bottom)
+        if msg["role"] == "user":
+            st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
