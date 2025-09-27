@@ -90,12 +90,11 @@ with chat_container:
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([9, 1])
     with col1:
-        query = st.text_area(
+        query = st.text_input(
             "Type your message",
             key="chat_input",
-            label_visibility="collapsed",
-            height=50,
-            placeholder="Type your message here..."
+            placeholder="Type your message here...",
+            label_visibility="collapsed"
         )
     with col2:
         submitted = st.form_submit_button("🔍")
