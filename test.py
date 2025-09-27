@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- SESSION STATE TO STORE CHAT ---
+# --- SESSION STATE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -29,11 +29,14 @@ st.markdown("""
     background-color: #f9f9f9;
     margin-bottom: 10px;
 }
-.input-container {
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     position: sticky;
     bottom: 0;
-    background-color: white;
-    padding: 1rem;
+    background: white;
+    padding: 10px;
     border-top: 1px solid #ddd;
 }
 .user-msg {
@@ -45,10 +48,10 @@ st.markdown("""
     text-align: left;
     width: fit-content;
     max-width: 70%;
-    margin-left: auto;   /* push to right */
+    margin-left: auto;
 }
 .ai-msg {
-    background-color: #DCE6F9; /* lighter shade from same palette */
+    background-color: #DCE6F9;
     color: #001965;
     padding: 10px 15px;
     border-radius: 15px 15px 15px 0px;
@@ -56,7 +59,10 @@ st.markdown("""
     text-align: left;
     width: fit-content;
     max-width: 70%;
-    margin-right: auto;  /* push to left */
+    margin-right: auto;
+}
+textarea {
+    resize: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -69,7 +75,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- CHAT AREA (scrollable) ---
+# --- CHAT MESSAGES ---
 chat_container = st.container()
 with chat_container:
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -80,20 +86,29 @@ with chat_container:
             st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- INPUT AREA ---
-st.markdown('<div class="input-container">', unsafe_allow_html=True)
-st.markdown("### Ask me anything")
-query = st.text_area("Type something here...", height=80, label_visibility="collapsed", placeholder="Type something here...")
+# --- INPUT BAR ---
+with st.form(key="chat_form", clear_on_submit=True):
+    col1, col2 = st.columns([9, 1])
+    with col1:
+        query = st.text_area(
+            "Type your message",
+            key="chat_input",
+            label_visibility="collapsed",
+            height=50,
+            placeholder="Type your message here..."
+        )
+    with col2:
+        submitted = st.form_submit_button("🔍")
 
-if st.button("🔍 Send"):
-    if query.strip():
-        # Append user message immediately
+    if submitted and query.strip():
+        # Save user message
         st.session_state.messages.append({"role": "user", "text": query})
 
+        # Get AI response
         with st.spinner("🤖 Thinking..."):
             try:
                 response = requests.post(
-                    "https://aruna78.app.n8n.cloud/webhook/audit-buddy",  # ✅ production webhook
+                    "https://aruna78.app.n8n.cloud/webhook/audit-buddy",
                     json={"query": query},
                     timeout=30
                 )
@@ -106,6 +121,3 @@ if st.button("🔍 Send"):
                     st.error(f"❌ Error: {response.status_code} - {response.text}")
             except requests.exceptions.RequestException as e:
                 st.error(f"⚠️ Connection error: {e}")
-    else:
-        st.warning("⚠️ Please enter a question.")
-st.markdown('</div>', unsafe_allow_html=True)
