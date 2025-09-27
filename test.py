@@ -12,88 +12,87 @@ st.set_page_config(
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# --- CUSTOM CSS FOR BRANDING ---
+# --- CUSTOM CSS ---
 st.markdown("""
 <style>
-/* Page background */
+/* Make the whole app a flexbox */
 .stApp {
-    background-color: #FFFFFF;
-    color: #001965;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
-/* Header */
-.header-title {
-    color: #FFFFFF;
-    background-color: #001965;
-    padding: 15px;
-    border-radius: 8px;
+/* Chat container scrolls */
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+/* Input container sticks at bottom */
+.input-container {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding: 1rem;
+    border-top: 1px solid #ddd;
 }
 
 /* Chat bubbles */
 .user-msg {
-    background-color: #E6F0FF; /* Science Blue tint */
+    background-color: #E6F0FF;
     color: #001965;
     padding: 10px 15px;
     border-radius: 12px;
-    margin: 5px 0px;
+    margin: 5px 0;
     text-align: left;
+    width: fit-content;
+    max-width: 80%;
 }
 
 .ai-msg {
-    background-color: #001965; /* Midnight Blue */
+    background-color: #001965;
     color: #FFFFFF;
     padding: 10px 15px;
     border-radius: 12px;
-    margin: 5px 0px;
+    margin: 5px 0;
     text-align: left;
-}
-
-textarea {
-    border-radius: 8px;
-    border: 1px solid #005AD2;
-    padding: 10px;
-}
-
-div.stButton > button {
-    background-color: #005AD2;
-    color: #FFFFFF;
-    height: 40px;
-    width: 200px;
-    border-radius: 8px;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
+    width: fit-content;
+    max-width: 80%;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER WITH LOGO AND TITLE ---
-col1, col2 = st.columns([1, 6])
+# --- HEADER ---
+st.markdown("""
+<div style="background-color:#001965;color:white;padding:15px;border-radius:8px;margin-bottom:10px;">
+  <h2 style="margin:0;">📑 Audit Buddy</h2>
+  <p style="margin:0;font-size:16px;">Ask questions and get AI-powered answers from your audit knowledge base.</p>
+</div>
+""", unsafe_allow_html=True)
 
-with col1:
-    st.image("image.png", width=80)
+# --- CHAT AREA ---
+chat_container = st.container()
+with chat_container:
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    for msg in reversed(st.session_state.messages):  # show newest at bottom
+        if msg["role"] == "user":
+            st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-with col2:
-    st.markdown("""
-    <div class="header-title">
-        <h1 style="margin:0;">📑 Audit Buddy </h1>
-        <p style="margin:0; font-size: 16px;">Ask questions and get AI-powered answers from your audit knowledge base.</p>
-    </div>
-    """, unsafe_allow_html=True)
+# --- INPUT AREA ---
+st.markdown('<div class="input-container">', unsafe_allow_html=True)
+query = st.text_area("💬 Type your message...", height=80, label_visibility="collapsed")
 
-st.markdown("---")
+if st.button("🔍 Send"):
+    if query.strip():
+        # Append user message
+        st.session_state.messages.append({"role": "user", "text": query})
 
-# --- USER INPUT ---
-query = st.text_area("💬 Enter your question here:", height=120)
-
-# --- SUBMIT BUTTON ---
-if st.button("🔍 Get Answer"):
-    if query.strip() == "":
-        st.warning("⚠️ Please enter a question.")
-    else:
         with st.spinner("🤖 Thinking..."):
             try:
-                # Call your webhook
                 response = requests.post(
                     "https://aruna78.app.n8n.cloud/webhook-test/audit-buddy",
                     json={"query": query},
@@ -103,18 +102,11 @@ if st.button("🔍 Get Answer"):
                 if response.status_code == 200:
                     data = response.json()
                     answer = data.get("answer", "No answer received.")
-                    
-                    # Append messages to session state
-                    st.session_state.messages.insert(0, {"role": "AI", "text": answer})
-                    st.session_state.messages.insert(0, {"role": "user", "text": query})
+                    st.session_state.messages.append({"role": "AI", "text": answer})
                 else:
                     st.error(f"❌ Error: {response.status_code} - {response.text}")
             except requests.exceptions.RequestException as e:
                 st.error(f"⚠️ Connection error: {e}")
-
-# --- DISPLAY CHAT ---
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
+        st.warning("⚠️ Please enter a question.")
+st.markdown('</div>', unsafe_allow_html=True)
