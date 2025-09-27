@@ -15,35 +15,31 @@ if "messages" not in st.session_state:
 # --- CUSTOM CSS ---
 st.markdown("""
 <style>
-/* Target Streamlit's main content area */
-.reportview-container .main .block-container {
-    max-width: 800px !important;  /* Set your desired width */
+/* Center the main content and limit width */
+.block-container {
+    max-width: 800px;  /* adjust width as needed */
     padding-left: 1rem;
     padding-right: 1rem;
-    margin: 0 auto;  /* Center */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Optional: make header and chat bubbles fit nicely */
+.header, .chat-container, .input-row {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Chat container */
 .chat-container {
-    max-height: 70vh;
+    max-height: 60vh;
     overflow-y: auto;
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #f9f9f9;
     margin-bottom: 10px;
-}
-
-/* Sticky input */
-.input-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: sticky;
-    bottom: 0;
-    background: white;
-    padding: 10px;
-    border-top: 1px solid #ddd;
 }
 
 /* Chat bubbles */
@@ -70,7 +66,19 @@ st.markdown("""
     clear: both;
 }
 
-/* Header */
+/* Sticky input */
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+/* Header styling */
 .header {
     background-color:#001965;
     color:white;
