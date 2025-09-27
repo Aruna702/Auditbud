@@ -22,18 +22,16 @@ st.markdown("""
     padding-right: 1rem;
     margin-left: auto;
     margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    height: 90vh; /* take most of screen height */
 }
 
-/* Optional: make header and chat bubbles fit nicely */
-.header, .chat-container, .input-row {
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Chat container */
-.chat-container {
-    max-height: 60vh;
+/* Chat wrapper fills available space */
+.chat-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     padding: 1rem;
     border: 1px solid #ddd;
@@ -66,16 +64,14 @@ st.markdown("""
     clear: both;
 }
 
-/* Sticky input */
+/* Input bar pinned at bottom */
 .input-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     position: sticky;
     bottom: 0;
     background: white;
     padding: 10px;
     border-top: 1px solid #ddd;
+    z-index: 10;
 }
 
 /* Header styling */
@@ -91,10 +87,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-# --- MAIN CONTAINER WRAPPER ---
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
-
 # --- HEADER ---
 st.markdown("""
 <div class="header">
@@ -103,16 +95,14 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- CHAT MESSAGES ---
-chat_container = st.container()
-with chat_container:
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+# --- CHAT + INPUT ---
+st.markdown('<div class="chat-wrapper">', unsafe_allow_html=True)
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.markdown(f'<div class="user-msg">💬 {msg["text"]}</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # --- INPUT BAR ---
 with st.form(key="chat_form", clear_on_submit=True):
@@ -148,5 +138,3 @@ with st.form(key="chat_form", clear_on_submit=True):
                     st.error(f"❌ Error: {response.status_code} - {response.text}")
             except requests.exceptions.RequestException as e:
                 st.error(f"⚠️ Connection error: {e}")
-
-st.markdown('</div>', unsafe_allow_html=True)
