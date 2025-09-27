@@ -94,7 +94,7 @@ if st.button("🔍 Send"):
         with st.spinner("🤖 Thinking..."):
             try:
                 response = requests.post(
-                    "https://aruna78.app.n8n.cloud/webhook-test/audit-buddy",
+                    "https://aruna78.app.n8n.cloud/webhook/audit-buddy",
                     json={"query": query},
                     timeout=30
                 )
