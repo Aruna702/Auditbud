@@ -43,8 +43,8 @@ st.markdown("""
     border-radius: 12px;
     margin: 5px 0;
     text-align: left;
-    width: fit-content;
-    max-width: 80%;
+    max-width: 70%;
+    margin-left: auto;   /* push to right */
 }
 .ai-msg {
     background-color: #001965;
@@ -53,8 +53,8 @@ st.markdown("""
     border-radius: 12px;
     margin: 5px 0;
     text-align: left;
-    width: fit-content;
-    max-width: 80%;
+    max-width: 70%;
+    margin-right: auto;  /* push to left */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -99,10 +99,7 @@ if st.button("🔍 Send"):
                     data = response.json()
                     answer = data.get("answer", "No answer received.")
                     st.session_state.messages.append({"role": "AI", "text": answer})
-
-                    # ✅ force rerun so the answer displays immediately
                     st.rerun()
-
                 else:
                     st.error(f"❌ Error: {response.status_code} - {response.text}")
             except requests.exceptions.RequestException as e:
