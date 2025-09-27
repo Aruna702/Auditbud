@@ -83,15 +83,7 @@ with chat_placeholder:
         else:
             st.markdown(f'<div class="ai-msg">🤖 {msg["text"]}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-# --- AUTO SCROLL TO BOTTOM ---
-st.markdown("""
-<script>
-    var chatBox = window.parent.document.querySelector('.chat-container');
-    if (chatBox) {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-</script>
-""", unsafe_allow_html=True)
+
 
 # --- FIXED INPUT BAR ---
 st.markdown('<div class="input-row">', unsafe_allow_html=True)
