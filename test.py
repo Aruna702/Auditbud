@@ -40,19 +40,21 @@ st.markdown("""
     background-color: #E6F0FF;
     color: #001965;
     padding: 10px 15px;
-    border-radius: 12px;
+    border-radius: 15px 15px 0px 15px;
     margin: 5px 0;
     text-align: left;
+    width: fit-content;
     max-width: 70%;
     margin-left: auto;   /* push to right */
 }
 .ai-msg {
-    background-color: #001965;
-    color: #FFFFFF;
+    background-color: #DCE6F9; /* lighter shade from same palette */
+    color: #001965;
     padding: 10px 15px;
-    border-radius: 12px;
+    border-radius: 15px 15px 15px 0px;
     margin: 5px 0;
     text-align: left;
+    width: fit-content;
     max-width: 70%;
     margin-right: auto;  /* push to left */
 }
