@@ -15,23 +15,17 @@ if "messages" not in st.session_state:
 # --- CUSTOM CSS ---
 st.markdown("""
 <style>
-/* Limit max width and center everything */
-.main-container {
-    max-width: 800px;   /* adjust this value for width */
-    margin: 0 auto;     /* centers the container */
-    padding: 1rem;
-}
-
-/* App layout */
-.stApp {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+/* Target Streamlit's main content area */
+.reportview-container .main .block-container {
+    max-width: 800px !important;  /* Set your desired width */
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin: 0 auto;  /* Center */
 }
 
 /* Chat container */
 .chat-container {
-    flex: 1;
+    max-height: 70vh;
     overflow-y: auto;
     padding: 1rem;
     border: 1px solid #ddd;
@@ -40,7 +34,7 @@ st.markdown("""
     margin-bottom: 10px;
 }
 
-/* Input bar */
+/* Sticky input */
 .input-row {
     display: flex;
     align-items: center;
@@ -51,11 +45,8 @@ st.markdown("""
     padding: 10px;
     border-top: 1px solid #ddd;
 }
-textarea {
-    resize: none !important;
-}
 
-/* Chat bubbles sizing dynamically with content */
+/* Chat bubbles */
 .user-msg, .ai-msg {
     display: inline-block;
     padding: 10px 15px;
@@ -87,15 +78,11 @@ textarea {
     border-radius:8px;
     margin-bottom:10px;
 }
-.header h2 {
-    margin:0;
-}
-.header p {
-    margin:0;
-    font-size:16px;
-}
+.header h2 { margin:0; }
+.header p { margin:0; font-size:16px; }
 </style>
 """, unsafe_allow_html=True)
+
 
 # --- MAIN CONTAINER WRAPPER ---
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
